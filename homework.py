@@ -17,7 +17,9 @@ def parse_homework_status(homework):
     homework_status = homework.get('status')
     homework_name = homework.get('homework_name')
     if homework_status is None:
-        return 'Invalid server response'
+        return 'Упс! Что-то со статусом домашней работы'
+    elif homework_name is None:
+        return 'Не найдено имя домашнего задания'
     elif homework_status != 'approved':
         verdict = 'К сожалению в работе нашлись ошибки.'
     else:
@@ -26,6 +28,8 @@ def parse_homework_status(homework):
 
 
 def get_homework_statuses(current_timestamp):
+    if current_timestamp is None:
+        current_timestamp = int(time.time())
     url = 'https://praktikum.yandex.ru/api/user_api/homework_statuses/'
     headers = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
     params = {'from_date': current_timestamp}
@@ -33,7 +37,8 @@ def get_homework_statuses(current_timestamp):
         homework_statuses = requests.get(url=url, headers=headers, params=params)
         return homework_statuses.json()
     except RequestException as error:
-        print(f'Error {error} occured while getting JSON')
+        print(f'Произошла ошибка {error} при попытке получить JSON')
+        return dict()
 
 
 def send_message(message):
