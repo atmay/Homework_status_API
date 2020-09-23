@@ -16,11 +16,9 @@ bot = telegram.Bot(token=TELEGRAM_TOKEN)
 def parse_homework_status(homework):
     homework_status = homework.get('status')
     homework_name = homework.get('homework_name')
-    if homework_status is None:
-        return 'Упс! Что-то со статусом домашней работы'
-    elif homework_name is None:
-        return 'Не найдено имя домашнего задания'
-    elif homework_status != 'approved':
+    if homework_status is None or homework_name is None:
+        return 'Упс! Отсутствует имя или статус домашней работы'
+    if homework_status != 'approved':
         verdict = 'К сожалению в работе нашлись ошибки.'
     else:
         verdict = 'Ревьюеру всё понравилось, можно приступать к следующему уроку.'
@@ -34,11 +32,15 @@ def get_homework_statuses(current_timestamp):
     headers = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
     params = {'from_date': current_timestamp}
     try:
-        homework_statuses = requests.get(url=url, headers=headers, params=params)
+        homework_statuses = requests.get(
+            url=url,
+            headers=headers,
+            params=params
+        )
         return homework_statuses.json()
     except RequestException as error:
         print(f'Произошла ошибка {error} при попытке получить JSON')
-        return dict()
+        return {}
 
 
 def send_message(message):
