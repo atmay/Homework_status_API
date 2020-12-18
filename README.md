@@ -1,2 +1,4 @@
-# api_sp1_bot
-api sp1 bot
+# Homework Status API
+
+
+This API sends notifications (SMS via Twillio servis) every time the status of homework is changed.
